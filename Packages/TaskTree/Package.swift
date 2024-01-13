@@ -14,11 +14,16 @@ let package = Package(
             name: "AppFeature",
             targets: ["AppFeature"]
         ),
+        .library(
+            name: "SettingFeature",
+            targets: [
+                "SettingFeature"
+            ]
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.1.5"),
-        .package(url: "https://github.com/pointfreeco/swiftui-navigation", exact: "1.2.0"),
-        .package(url: "https://github.com/Ryu0118/swift-fullscreen-popup", exact: "0.2.0")
+        .package(url: "https://github.com/pointfreeco/swiftui-navigation", exact: "1.2.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -26,14 +31,7 @@ let package = Package(
         .target(
             name: "AppFeature",
             dependencies: [
-                "TodoClient",
-                "Utils",
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
-                .product(name: "FullscreenPopup", package: "swift-fullscreen-popup"),
-            ],
-            resources: [
-                .process("Resources")
+                "TaskTreeFeature"
             ]
         ),
         .target(
@@ -48,7 +46,7 @@ let package = Package(
                 "SwiftDataModel",
                 "SwiftDataUtils",
                 .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "DependenciesMacros", package: "swift-dependencies"),
+                .product(name: "DependenciesMacros", package: "swift-dependencies")
             ],
             resources: [
                 .process("Resources")
@@ -57,7 +55,32 @@ let package = Package(
         .target(
             name: "Utils",
             dependencies: [
-                .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
+                .product(name: "SwiftUINavigation", package: "swiftui-navigation")
+            ],
+            resources: [
+                .process("Resources")
+            ]
+        ),
+        .target(
+            name: "Generated"
+        ),
+        .target(
+            name: "TaskTreeFeature",
+            dependencies: [
+                "TodoClient",
+                "Utils",
+                "SettingFeature",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "SwiftUINavigation", package: "swiftui-navigation")
+            ],
+            resources: [
+                .process("Resources")
+            ]
+        ),
+        .target(
+            name: "SettingFeature",
+            dependencies: [
+                "Generated"
             ],
             resources: [
                 .process("Resources")
@@ -66,7 +89,10 @@ let package = Package(
 
         .testTarget(
             name: "TaskTreeTests",
-            dependencies: ["AppFeature"]
-        ),
+            dependencies: [
+                "AppFeature",
+                .product(name: "Dependencies", package: "swift-dependencies")
+            ]
+        )
     ]
 )

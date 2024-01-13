@@ -28,21 +28,19 @@ public extension ModelContext {
             }
         }
 
-        let modelConfiguration: ModelConfiguration = {
-            switch storageType {
-            case .inMemory:
-                ModelConfiguration(
-                    schema: schema,
-                    isStoredInMemoryOnly: true
-                )
-            case .file:
-                ModelConfiguration(
-                    schema: schema,
-                    url: sqliteURL,
-                    cloudKitDatabase: .automatic
-                )
-            }
-        }()
+        let modelConfiguration = switch storageType {
+        case .inMemory:
+            ModelConfiguration(
+                schema: schema,
+                isStoredInMemoryOnly: true
+            )
+        case .file:
+            ModelConfiguration(
+                schema: schema,
+                url: sqliteURL,
+                cloudKitDatabase: .automatic
+            )
+        }
 
         let modelContainer = try ModelContainer(
             for: schema,

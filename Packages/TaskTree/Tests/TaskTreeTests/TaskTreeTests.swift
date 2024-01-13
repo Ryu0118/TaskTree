@@ -1,5 +1,5 @@
-import XCTest
 @testable import TaskTree
+import XCTest
 
 final class TaskTreeTests: XCTestCase {
     func testExample() throws {

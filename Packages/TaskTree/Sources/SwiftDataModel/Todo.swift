@@ -57,8 +57,8 @@ public let rootTodo = Todo(
     createdAt: Date()
 )
 
-extension Todo {
-    public var isRoot: Bool {
+public extension Todo {
+    var isRoot: Bool {
         rootTodo.id == id
     }
 }

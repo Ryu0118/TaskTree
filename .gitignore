@@ -3,3 +3,4 @@ xcuserdata/
 App/TaskTree.xcodeproj/xcuserdata/
 TaskTree.xcworkspace/xcuserdata/
 App/.DS_Store
+Packages/TaskTree/Sources/Generated/Licenses.swift

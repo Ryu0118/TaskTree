@@ -1,9 +1,9 @@
-import Foundation
 import Dependencies
 import DependenciesMacros
-import SwiftDataUtils
-import SwiftDataModel
+import Foundation
 import SwiftData
+import SwiftDataModel
+import SwiftDataUtils
 
 @DependencyClient
 public struct TodoClient {
@@ -131,8 +131,8 @@ extension TodoClient: TestDependencyKey {
     public static let previewValue: Self = .live(storageType: .inMemory, shouldDeleteOldFile: true)
 }
 
-extension DependencyValues {
-    public var todoClient: TodoClient {
+public extension DependencyValues {
+    var todoClient: TodoClient {
         get { self[TodoClient.self] }
         set { self[TodoClient.self] = newValue }
     }

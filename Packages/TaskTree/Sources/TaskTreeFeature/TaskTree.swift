@@ -1,17 +1,20 @@
-import Observation
-import Foundation
-import TodoClient
 import Dependencies
-import SwiftUINavigation
+import Foundation
+import Observation
 import SwiftDataModel
-import Utils
 import SwiftUI
+import SwiftUINavigation
+import TodoClient
+import Utils
+import SettingFeature
 
 @Observable
 final class TaskTreeModel {
     enum AlertAction: Equatable {
         case addTask
     }
+
+    var setting: SettingModel?
     var selectedChildModel: TaskTreeModel?
     var parentTodo: Todo
     var children: [TaskTreeModel] {
@@ -19,6 +22,7 @@ final class TaskTreeModel {
             .map { TaskTreeModel(parentTodo: $0) }
             .sorted { $0.parentTodo.createdAt > $1.parentTodo.createdAt }
     }
+
     var alert: AlertState<Never>?
     var addTaskAlert: AlertState<AlertAction>?
     var taskTitle: String = ""
@@ -81,6 +85,10 @@ final class TaskTreeModel {
                 TextState("Cancel", bundle: .module)
             }
         }
+    }
+
+    func presentSetting() {
+        setting = .init()
     }
 }
 
@@ -165,7 +173,19 @@ public struct TaskTreeView: View {
         .navigationDestination(unwrapping: $model.selectedChildModel) { $childModel in
             TaskTreeView(model: $childModel.wrappedValue)
         }
+        .sheet(unwrapping: $model.setting) { $setting in
+            NavigationStack {
+                SettingView(modal: $setting.wrappedValue)
+            }
+        }
         .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    model.presentSetting()
+                } label: {
+                    Image(systemName: "gear")
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     model.presentAddTaskAlert()

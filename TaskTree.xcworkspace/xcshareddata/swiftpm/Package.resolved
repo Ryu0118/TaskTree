@@ -55,15 +55,6 @@
       }
     },
     {
-      "identity" : "swift-fullscreen-popup",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Ryu0118/swift-fullscreen-popup",
-      "state" : {
-        "revision" : "9e5db74b1e97e0bcad13176273a92340d309ea7e",
-        "version" : "0.2.0"
-      }
-    },
-    {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-syntax",

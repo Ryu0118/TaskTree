@@ -1,0 +1,6 @@
+--swiftversion 5.9
+
+--commas inline
+--disable redundantVoidReturnType,blankLinesAroundMark
+--disable redundantLet
+--disable preferForLoop

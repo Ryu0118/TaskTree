@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		429D47422B52E1F4009A257B /* SettingFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 429D47412B52E1F4009A257B /* SettingFeature */; };
 		42DBDFBB2B52337C002F555D /* TaskTreeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DBDFB32B52337C002F555D /* TaskTreeApp.swift */; };
 		42DBDFBD2B52337C002F555D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42DBDFB52B52337C002F555D /* Assets.xcassets */; };
 		42DBDFBE2B52337C002F555D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42DBDFB72B52337C002F555D /* Preview Assets.xcassets */; };
@@ -28,6 +29,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				429D47422B52E1F4009A257B /* SettingFeature in Frameworks */,
 				42DBDFC32B524F38002F555D /* AppFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -98,6 +100,7 @@
 			name = TaskTree;
 			packageProductDependencies = (
 				42DBDFC22B524F38002F555D /* AppFeature */,
+				429D47412B52E1F4009A257B /* SettingFeature */,
 			);
 			productName = TaskTree;
 			productReference = 42DBDF9D2B52314B002F555D /* TaskTree.app */;
@@ -366,6 +369,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		429D47412B52E1F4009A257B /* SettingFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SettingFeature;
+		};
 		42DBDFC22B524F38002F555D /* AppFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AppFeature;

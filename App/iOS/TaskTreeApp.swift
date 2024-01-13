@@ -1,13 +1,11 @@
-import SwiftUI
 import AppFeature
+import SwiftUI
 
 @main
 struct TaskTreeApp: App {
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                TaskTreeView()
-            }
+            AppView()
         }
     }
 }

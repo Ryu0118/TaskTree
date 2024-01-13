@@ -7,7 +7,7 @@ public extension View {
         action handler: @escaping (Value?) async -> Void = { (_: Never?) async in },
         content: () -> some View
     ) -> some View {
-        self.alert(
+        alert(
             (state.wrappedValue?.title).map(Text.init) ?? Text(verbatim: ""),
             isPresented: state.isPresent(),
             presenting: state.wrappedValue,

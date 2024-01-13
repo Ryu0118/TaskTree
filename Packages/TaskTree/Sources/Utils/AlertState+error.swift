@@ -2,7 +2,7 @@ import Foundation
 import SwiftUINavigation
 
 public extension AlertState {
-    static func error<E: Error>(_ error: E) -> Self {
+    static func error(_ error: some Error) -> Self {
         AlertState {
             TextState("An error has occurred", bundle: .module)
         } actions: {
