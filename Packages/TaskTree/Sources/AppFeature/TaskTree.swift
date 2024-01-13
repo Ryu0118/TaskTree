@@ -9,6 +9,9 @@ import SwiftUI
 
 @Observable
 final class TaskTreeModel {
+    enum AlertAction: Equatable {
+        case addTask
+    }
     var selectedChildModel: TaskTreeModel?
     var parentTodo: Todo
     var children: [TaskTreeModel] {
@@ -17,6 +20,8 @@ final class TaskTreeModel {
             .sorted { $0.parentTodo.createdAt > $1.parentTodo.createdAt }
     }
     var alert: AlertState<Never>?
+    var addTaskAlert: AlertState<AlertAction>?
+    var taskTitle: String = ""
 
     init(parentTodo: Todo?) {
         if let parentTodo {
@@ -26,7 +31,7 @@ final class TaskTreeModel {
             do {
                 self.parentTodo = try todoClient.fetchRootTodo()
             } catch {
-                fatalError("")
+                fatalError("Failed to retrieve root todo")
             }
         }
     }
@@ -52,6 +57,7 @@ final class TaskTreeModel {
     func addTask(_ todo: Todo) {
         do {
             try todoClient.appendTodos(todo: todo, parentTodo: parentTodo)
+            taskTitle = ""
         } catch {
             alert = .error(error)
         }
@@ -62,6 +68,20 @@ final class TaskTreeModel {
             try todoClient.toggleIsComplete(todo: todo)
         } catch {
             alert = .error(error)
+        }
+    }
+
+    func presentAddTaskAlert() {
+        addTaskAlert = AlertState {
+            TextState("Add a task", bundle: .module)
+        } actions: {
+            ButtonState(action: .addTask) {
+                TextState("Add", bundle: .module)
+            }
+
+            ButtonState(role: .cancel) {
+                TextState("Cancel", bundle: .module)
+            }
         }
     }
 }
@@ -90,7 +110,21 @@ public struct TaskTreeView: View {
                         }
                     HStack {
                         Text(childModel.parentTodo.title)
+                            .overlay {
+                                if childModel.parentTodo.isCompleted {
+                                    Rectangle()
+                                        .fill(.primary)
+                                        .frame(height: 1)
+                                }
+                            }
                         Spacer()
+                        HStack(spacing: 0) {
+                            Text("\(childModel.parentTodo.childrenCount)")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            NavigationLink<EmptyView, EmptyView>.empty
+                                .frame(width: 10)
+                        }
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
@@ -112,21 +146,31 @@ public struct TaskTreeView: View {
                 )
             }
         }
-        .alert($model.alert) { _ in}
+        .alert($model.alert) 
+        .alert($model.addTaskAlert) { action in
+            switch action {
+            case .addTask:
+                model.addTask(
+                    Todo(
+                        id: UUID(),
+                        children: [],
+                        title: model.taskTitle,
+                        createdAt: .now
+                    )
+                )
+            case .none:
+                break
+            }
+        } content: {
+            TextField(String(localized: "Enter a task name", bundle: .module), text: $model.taskTitle)
+        }
         .navigationDestination(unwrapping: $model.selectedChildModel) { $childModel in
             TaskTreeView(model: $childModel.wrappedValue)
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    model.addTask(
-                        .init(
-                            id: UUID(),
-                            children: [],
-                            title: UUID().uuidString,
-                            createdAt: Date()
-                        )
-                    )
+                    model.presentAddTaskAlert()
                 } label: {
                     Image(systemName: "plus")
                 }

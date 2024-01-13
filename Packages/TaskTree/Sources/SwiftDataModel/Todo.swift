@@ -28,6 +28,13 @@ public final class Todo {
         }
     }
 
+    @Transient
+    public var childrenCount: Int {
+        children.count + children.reduce(0) { partialResult, todo in
+            partialResult + todo.childrenCount
+        }
+    }
+
     public var _isCompleted: Bool?
 
     public init(

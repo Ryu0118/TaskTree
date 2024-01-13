@@ -17,7 +17,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.1.5"),
-        .package(url: "https://github.com/pointfreeco/swiftui-navigation", exact: "1.2.0")
+        .package(url: "https://github.com/pointfreeco/swiftui-navigation", exact: "1.2.0"),
+        .package(url: "https://github.com/Ryu0118/swift-fullscreen-popup", exact: "0.2.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -29,6 +30,7 @@ let package = Package(
                 "Utils",
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
+                .product(name: "FullscreenPopup", package: "swift-fullscreen-popup"),
             ],
             resources: [
                 .process("Resources")
