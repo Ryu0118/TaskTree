@@ -38,8 +38,6 @@ final class TaskTreeModel {
 
     @ObservationIgnored
     @Dependency(\.todoClient) private var todoClient
-    @ObservationIgnored
-    @Dependency(\.continuousClock) private var clock
 
     func delete(_ indexSet: IndexSet) {
         do {
@@ -146,7 +144,7 @@ public struct TaskTreeView: View {
                 )
             }
         }
-        .alert($model.alert) 
+        .alert($model.alert)
         .alert($model.addTaskAlert) { action in
             switch action {
             case .addTask:

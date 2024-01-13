@@ -1,3 +1,5 @@
 xcuserdata/
 .DS_Store
-App/TaskTree.xcodeproj/xcuserdata
+App/TaskTree.xcodeproj/xcuserdata/
+TaskTree.xcworkspace/xcuserdata/
+App/.DS_Store
