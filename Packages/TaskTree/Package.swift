@@ -27,7 +27,6 @@ let package = Package(
             dependencies: [
                 "TodoClient",
                 "Utils",
-                "SharedModel",
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
             ],
@@ -42,14 +41,10 @@ let package = Package(
             name: "SwiftDataUtils"
         ),
         .target(
-            name: "SharedModel"
-        ),
-        .target(
             name: "TodoClient",
             dependencies: [
                 "SwiftDataModel",
                 "SwiftDataUtils",
-                "SharedModel",
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
             ],

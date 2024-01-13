@@ -20,6 +20,7 @@
 		42DBDFB72B52337C002F555D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		42DBDFB92B52337C002F555D /* TaskTree.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = TaskTree.entitlements; sourceTree = "<group>"; };
 		42DBDFBA2B52337C002F555D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		42DBDFC42B52A73A002F555D /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +60,7 @@
 				42DBDFB62B52337C002F555D /* Preview Content */,
 				42DBDFB92B52337C002F555D /* TaskTree.entitlements */,
 				42DBDFBA2B52337C002F555D /* Info.plist */,
+				42DBDFC42B52A73A002F555D /* InfoPlist.xcstrings */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -118,11 +120,12 @@
 			};
 			buildConfigurationList = 42DBDF982B52314B002F555D /* Build configuration list for PBXProject "TaskTree" */;
 			compatibilityVersion = "Xcode 14.0";
-			developmentRegion = en;
+			developmentRegion = ja;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = 42DBDF942B52314B002F555D;
 			productRefGroup = 42DBDF9E2B52314B002F555D /* Products */;

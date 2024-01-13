@@ -14,7 +14,6 @@ public extension ModelContext {
         shouldDeleteOldFile: Bool,
         fileName: String = #function
     ) throws {
-        // 1. モデル定義のメタタイプで Schema を初期化
         let schema = Schema(types)
 
         let sqliteURL = URL.documentsDirectory
@@ -39,7 +38,8 @@ public extension ModelContext {
             case .file:
                 ModelConfiguration(
                     schema: schema,
-                    url: sqliteURL
+                    url: sqliteURL,
+                    cloudKitDatabase: .automatic
                 )
             }
         }()

@@ -1,29 +1,24 @@
 import Observation
 import Foundation
 import TodoClient
-import SharedModel
 import Dependencies
 import SwiftUINavigation
+import SwiftDataModel
 import Utils
 import SwiftUI
 
 @Observable
 final class TaskTreeModel {
-    enum AlertAction {
-    }
-
     var selectedChildModel: TaskTreeModel?
-    var parentModel: TaskTreeModel?
     var parentTodo: Todo
     var children: [TaskTreeModel] {
         parentTodo.children
-            .map { TaskTreeModel(parentTodo: $0, parentModel: self) }
+            .map { TaskTreeModel(parentTodo: $0) }
             .sorted { $0.parentTodo.createdAt > $1.parentTodo.createdAt }
     }
-    var alert: AlertState<AlertAction>?
+    var alert: AlertState<Never>?
 
-    init(parentTodo: Todo?, parentModel: TaskTreeModel?) {
-        self.parentModel = parentModel
+    init(parentTodo: Todo?) {
         if let parentTodo {
             self.parentTodo = parentTodo
         } else {
@@ -41,6 +36,15 @@ final class TaskTreeModel {
     @ObservationIgnored
     @Dependency(\.continuousClock) private var clock
 
+    func delete(_ indexSet: IndexSet) {
+        do {
+            let todos = indexSet.map { children[$0].parentTodo }
+            try todoClient.remove(parentTodo: parentTodo, todos: todos)
+        } catch {
+            alert = .error(error)
+        }
+    }
+
     func selectChildModel(_ child: TaskTreeModel) {
         selectedChildModel = child
     }
@@ -48,28 +52,14 @@ final class TaskTreeModel {
     func addTask(_ todo: Todo) {
         do {
             try todoClient.appendTodos(todo: todo, parentTodo: parentTodo)
-            update()
         } catch {
             alert = .error(error)
         }
     }
 
-    func update(wait duration: Duration = .seconds(0.1)) {
-        Task { @MainActor in
-            do {
-                try await clock.sleep(for: duration)
-                parentTodo = try todoClient.fetchTodo(todoID: parentTodo.id)
-                parentModel?.update(wait: .zero)
-            } catch {
-                alert = .error(error)
-            }
-        }
-    }
-
     func toggleIsCompleted(_ todo: Todo) {
         do {
-            try todoClient.toggleIsComplete(todoID: todo.id)
-            update()
+            try todoClient.toggleIsComplete(todo: todo)
         } catch {
             alert = .error(error)
         }
@@ -80,7 +70,7 @@ public struct TaskTreeView: View {
     @Bindable var model: TaskTreeModel
 
     public init() {
-        model = TaskTreeModel(parentTodo: nil, parentModel: nil)
+        model = TaskTreeModel(parentTodo: nil)
     }
 
     init(model: TaskTreeModel) {
@@ -88,37 +78,28 @@ public struct TaskTreeView: View {
     }
 
     public var body: some View {
-        //        NavigationSplitView {
-        //            List(model.children, id: \.parentTodo) { childModel in
-        //                if let todo = childModel.parentTodo {
-        //                    Text(todo.title)
-        //                        .onTapGesture {
-        //                            model.selectChildModel(childModel)
-        //                        }
-        //                }
-        //            }
-        //        } detail: {
-        //            if let selectedChildModel = model.selectedChildModel {
-        //                TaskTreeView(model: selectedChildModel)
-        //            }
-        //        }
-        List(model.children, id: \.parentTodo) { childModel in
-            HStack {
-                Image(systemName: childModel.parentTodo.isCompleted ? "checkmark.circle" : "circle")
-                    .resizable()
-                    .foregroundStyle(.primary)
-                    .frame(width: 17, height: 17)
-                    .onTapGesture {
-                        model.toggleIsCompleted(childModel.parentTodo)
-                    }
+        List {
+            ForEach(model.children, id: \.parentTodo) { childModel in
                 HStack {
-                    Text(childModel.parentTodo.title)
-                    Spacer()
+                    Image(systemName: childModel.parentTodo.isCompleted ? "checkmark.circle" : "circle")
+                        .resizable()
+                        .foregroundStyle(.primary)
+                        .frame(width: 18, height: 18)
+                        .onTapGesture {
+                            model.toggleIsCompleted(childModel.parentTodo)
+                        }
+                    HStack {
+                        Text(childModel.parentTodo.title)
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        model.selectChildModel(childModel)
+                    }
                 }
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    model.selectChildModel(childModel)
-                }
+            }
+            .onDelete { indexSet in
+                model.delete(indexSet)
             }
         }
         .navigationTitle(model.parentTodo.isRoot ? String(localized: "Task", bundle: .module) : model.parentTodo.title)
@@ -142,9 +123,8 @@ public struct TaskTreeView: View {
                         .init(
                             id: UUID(),
                             children: [],
-                            title: "こんにちは",
-                            createdAt: Date(), 
-                            isCompleted: false
+                            title: UUID().uuidString,
+                            createdAt: Date()
                         )
                     )
                 } label: {
@@ -161,7 +141,7 @@ public struct TaskTreeView: View {
             model: withDependencies {
                 $0.todoClient = .previewValue
             } operation: {
-                TaskTreeModel(parentTodo: nil, parentModel: nil)
+                TaskTreeModel(parentTodo: nil)
             }
         )
     }

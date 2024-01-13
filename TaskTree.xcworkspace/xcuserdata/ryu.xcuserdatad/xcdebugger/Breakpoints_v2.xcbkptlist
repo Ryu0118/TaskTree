@@ -3,4 +3,20 @@
    uuid = "BCE8932F-6471-425D-84F9-17E2B45B9FAE"
    type = "0"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C077D971-0C8B-420F-A4DC-E4CF7A5851C2"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../../var/folders/yv/p_dj7vzs6731fz_kf2sswrnw0000gn/T/swift-generated-sources/@__swiftmacro_10AppFeature13TaskTreeModelC5alert10ObservablefMr5_.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1"
+            endingLineNumber = "1">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

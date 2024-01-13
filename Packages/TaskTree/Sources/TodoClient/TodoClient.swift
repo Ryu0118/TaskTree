@@ -3,17 +3,17 @@ import Dependencies
 import DependenciesMacros
 import SwiftDataUtils
 import SwiftDataModel
-import SharedModel
 import SwiftData
 
 @DependencyClient
 public struct TodoClient {
-    public var fetchRootTodo: @Sendable () throws -> SharedModel.Todo
-    public var appendTodos: @Sendable (_ todo: SharedModel.Todo, _ parentTodo: SharedModel.Todo) throws -> Void
-    public var deleteTodo: @Sendable (_ todo: SharedModel.Todo) throws -> Void
-    public var fetchTodos: @Sendable (_ parentID: UUID) throws -> [SharedModel.Todo]
-    public var toggleIsComplete: @Sendable (_ todoID: UUID) throws -> Void
-    public var fetchTodo: @Sendable (_ todoID: UUID) throws -> SharedModel.Todo
+    public var fetchRootTodo: @Sendable () throws -> Todo
+    public var appendTodos: @Sendable (_ todo: Todo, _ parentTodo: Todo) throws -> Void
+    public var deleteTodo: @Sendable (_ todo: Todo) throws -> Void
+    public var fetchTodos: @Sendable (_ parentID: UUID) throws -> [Todo]
+    public var toggleIsComplete: @Sendable (_ todo: Todo) throws -> Void
+    public var fetchTodo: @Sendable (_ todoID: UUID) throws -> Todo
+    public var remove: @Sendable (_ parentTodo: Todo, _ todos: [Todo]) throws -> Void
 }
 
 extension TodoClient: DependencyKey {
@@ -51,21 +51,18 @@ extension TodoClient: DependencyKey {
                 let context = try context()
 
                 do {
-                    return try fetchTodo(id: rootTodo.id).convert()
-                } catch let error as TodoClientError {
-                    if error == .taskCannotBeFound {
-                        context.insert(rootTodo)
-                        try context.save()
-                        return rootTodo.convert()
-                    } else {
-                        throw error
-                    }
+                    return try fetchTodo(id: rootTodo.id)
+                } catch let error as TodoClientError where error == .taskCannotBeFound {
+                    context.insert(rootTodo)
+                    try context.save()
+                    return rootTodo
+                } catch {
+                    throw error
                 }
             },
             appendTodos: { todo, parentTodo in
                 let context = try context()
-                let parentPersistentTodo = try fetchTodo(id: parentTodo.id)
-                parentPersistentTodo.children.append(todo.convert())
+                parentTodo.children.append(todo)
                 try context.save()
             },
             deleteTodo: { todo in
@@ -87,11 +84,9 @@ extension TodoClient: DependencyKey {
                         }
                     )
                 )
-                .map { $0.convert() }
             },
-            toggleIsComplete: { id in
+            toggleIsComplete: { todo in
                 let context = try context()
-                let todo = try fetchTodo(id: id)
                 if todo.children.isEmpty {
                     if todo._isCompleted == nil {
                         todo._isCompleted = true
@@ -104,8 +99,13 @@ extension TodoClient: DependencyKey {
                 }
             },
             fetchTodo: { id in
-                let todo = try fetchTodo(id: id)
-                return todo.convert()
+                try fetchTodo(id: id)
+            },
+            remove: { parentTodo, todos in
+                let context = try context()
+                let todoIDs = todos.map(\.id)
+                parentTodo.children.removeAll { todoIDs.contains($0.id) }
+                try context.save()
             }
         )
     }

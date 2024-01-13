@@ -1,19 +1,12 @@
 import Foundation
 import SwiftData
 
-public let rootTodo = Todo(
-    id: UUID(uuidString: "4C0D55DC-95BD-405C-BC78-F09331422E57")!,
-    children: [],
-    title: "Root", 
-    createdAt: Date()
-)
-
 @Model
 public final class Todo {
     @Attribute(.unique)
     public var id: UUID
 
-    @Relationship(inverse: \Todo.parent)
+    @Relationship(deleteRule: .cascade, inverse: \Todo.parent)
     public var children: [Todo] = []
     public var parent: Todo?
     public var title: String
@@ -41,13 +34,24 @@ public final class Todo {
         id: UUID,
         children: [Todo],
         title: String,
-        parent: Todo? = nil,
         createdAt: Date
     ) {
         self.id = id
         self.children = children
         self.title = title
-        self.parent = parent
         self.createdAt = createdAt
+    }
+}
+
+public let rootTodo = Todo(
+    id: UUID(uuidString: "4C0D55DC-95BD-405C-BC78-F09331422E57")!,
+    children: [],
+    title: "Root",
+    createdAt: Date()
+)
+
+extension Todo {
+    public var isRoot: Bool {
+        rootTodo.id == id
     }
 }
