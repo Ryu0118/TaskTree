@@ -30,6 +30,9 @@ let package = Package(
                 "SharedModel",
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
+            ],
+            resources: [
+                .process("Resources")
             ]
         ),
         .target(
@@ -49,12 +52,18 @@ let package = Package(
                 "SharedModel",
                 .product(name: "Dependencies", package: "swift-dependencies"),
                 .product(name: "DependenciesMacros", package: "swift-dependencies"),
+            ],
+            resources: [
+                .process("Resources")
             ]
         ),
         .target(
             name: "Utils",
             dependencies: [
                 .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
+            ],
+            resources: [
+                .process("Resources")
             ]
         ),
 

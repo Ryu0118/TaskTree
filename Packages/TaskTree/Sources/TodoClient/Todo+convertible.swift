@@ -20,7 +20,14 @@ extension SwiftDataModel.Todo {
             id: id,
             children: children.map { $0.convert() },
             title: title,
-            createdAt: createdAt
+            createdAt: createdAt,
+            isCompleted: isCompleted
         )
+    }
+}
+
+extension SharedModel.Todo {
+    public var isRoot: Bool {
+        rootTodo.id == id
     }
 }

@@ -35,7 +35,7 @@ public final class Todo {
         }
     }
 
-    var _isCompleted: Bool?
+    public var _isCompleted: Bool?
 
     public init(
         id: UUID,

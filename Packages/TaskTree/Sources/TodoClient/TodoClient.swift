@@ -11,6 +11,9 @@ public struct TodoClient {
     public var fetchRootTodo: @Sendable () throws -> SharedModel.Todo
     public var appendTodos: @Sendable (_ todo: SharedModel.Todo, _ parentTodo: SharedModel.Todo) throws -> Void
     public var deleteTodo: @Sendable (_ todo: SharedModel.Todo) throws -> Void
+    public var fetchTodos: @Sendable (_ parentID: UUID) throws -> [SharedModel.Todo]
+    public var toggleIsComplete: @Sendable (_ todoID: UUID) throws -> Void
+    public var fetchTodo: @Sendable (_ todoID: UUID) throws -> SharedModel.Todo
 }
 
 extension TodoClient: DependencyKey {
@@ -27,40 +30,42 @@ extension TodoClient: DependencyKey {
                 shouldDeleteOldFile: shouldDeleteOldFile
             )
         }
+
+        @Sendable func fetchTodo(id: UUID) throws -> SwiftDataModel.Todo {
+            let context = try context()
+            guard let todo = try context.fetch(
+                FetchDescriptor<SwiftDataModel.Todo>(
+                    predicate: #Predicate {
+                        $0.id == id
+                    }
+                )
+            ).first
+            else {
+                throw TodoClientError.taskCannotBeFound
+            }
+            return todo
+        }
+
         return Self(
             fetchRootTodo: {
                 let context = try context()
-                let rootTodoID = rootTodo.id
-                let convertedRootTodo = rootTodo.convert()
 
-                let fetchedRootTodo = try context.fetch(
-                    FetchDescriptor<SwiftDataModel.Todo>(
-                        predicate: #Predicate {
-                            $0.id == rootTodoID
-                        }
-                    )
-                ).first
-
-                if let fetchedRootTodo {
-                    return fetchedRootTodo.convert()
-                }
-                else {
-                    context.insert(rootTodo)
-                    try context.save()
-                    return convertedRootTodo
+                do {
+                    return try fetchTodo(id: rootTodo.id).convert()
+                } catch let error as TodoClientError {
+                    if error == .taskCannotBeFound {
+                        context.insert(rootTodo)
+                        try context.save()
+                        return rootTodo.convert()
+                    } else {
+                        throw error
+                    }
                 }
             },
             appendTodos: { todo, parentTodo in
                 let context = try context()
-                let parentID = parentTodo.id
-                let parentPersistentTodo = try context.fetch(
-                    FetchDescriptor<SwiftDataModel.Todo>(
-                        predicate: #Predicate {
-                            $0.id == parentID
-                        }
-                    )
-                ).first
-                parentPersistentTodo?.children.append(todo.convert())
+                let parentPersistentTodo = try fetchTodo(id: parentTodo.id)
+                parentPersistentTodo.children.append(todo.convert())
                 try context.save()
             },
             deleteTodo: { todo in
@@ -72,8 +77,52 @@ extension TodoClient: DependencyKey {
                         $0.id == id
                     }
                 )
+            },
+            fetchTodos: { id in
+                let context = try context()
+                return try context.fetch(
+                    FetchDescriptor<SwiftDataModel.Todo>(
+                        predicate: #Predicate {
+                            $0.parent?.id == id
+                        }
+                    )
+                )
+                .map { $0.convert() }
+            },
+            toggleIsComplete: { id in
+                let context = try context()
+                let todo = try fetchTodo(id: id)
+                if todo.children.isEmpty {
+                    if todo._isCompleted == nil {
+                        todo._isCompleted = true
+                    } else {
+                        todo._isCompleted?.toggle()
+                    }
+                    try context.save()
+                } else {
+                    throw TodoClientError.taskCannotBeCompleted
+                }
+            },
+            fetchTodo: { id in
+                let todo = try fetchTodo(id: id)
+                return todo.convert()
             }
         )
+    }
+}
+
+public enum TodoClientError: LocalizedError {
+    case taskCannotBeCompleted
+    case taskCannotBeFound
+
+    public var errorDescription: String? {
+        switch self {
+        case .taskCannotBeCompleted:
+            String(localized: "task-cannot-be-completed", bundle: .module)
+
+        case .taskCannotBeFound:
+            String(localized: "task-cannot-be-found", bundle: .module)
+        }
     }
 }
 
