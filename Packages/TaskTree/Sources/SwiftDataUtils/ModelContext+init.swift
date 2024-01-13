@@ -51,43 +51,4 @@ public extension ModelContext {
 
         self.init(modelContainer)
     }
-
-    func fetch<Model>(
-        for type: Model.Type
-    ) throws -> [Model] where Model: PersistentModel {
-        try fetch(.init())
-    }
-
-    func fetchCount<Model>(
-        for type: Model.Type
-    ) throws -> Int where Model: PersistentModel {
-        try fetchCount(FetchDescriptor<Model>())
-    }
-
-    func fetch<Model>(
-        for type: Model.Type,
-        id persistentModelID: PersistentIdentifier
-    ) throws -> Model? where Model: PersistentModel {
-        var fetchDescriptor = FetchDescriptor<Model>(
-            predicate: #Predicate {
-                $0.persistentModelID == persistentModelID
-            }
-        )
-        fetchDescriptor.fetchLimit = 1
-
-        return try fetch(fetchDescriptor).first
-    }
-
-    func fetch<Model>(
-        for type: Model.Type,
-        offset: Int? = nil,
-        limit: Int? = nil,
-        sortBy sortDescriptors: [SortDescriptor<Model>]
-    ) throws -> [Model] where Model: PersistentModel {
-        var fetchDescriptor = FetchDescriptor<Model>(sortBy: sortDescriptors)
-        fetchDescriptor.fetchOffset = offset
-        fetchDescriptor.fetchLimit = limit
-
-        return try fetch(fetchDescriptor)
-    }
 }

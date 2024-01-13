@@ -54,12 +54,12 @@ final class TaskTreeModel {
         }
     }
 
-    func update() {
+    func update(wait duration: Duration = .seconds(0.1)) {
         Task { @MainActor in
             do {
-                try await clock.sleep(for: .seconds(0.1))
+                try await clock.sleep(for: duration)
                 parentTodo = try todoClient.fetchTodo(todoID: parentTodo.id)
-                parentModel?.update()
+                parentModel?.update(wait: .zero)
             } catch {
                 alert = .error(error)
             }
@@ -107,7 +107,7 @@ public struct TaskTreeView: View {
                 Image(systemName: childModel.parentTodo.isCompleted ? "checkmark.circle" : "circle")
                     .resizable()
                     .foregroundStyle(.primary)
-                    .frame(width: 15, height: 15)
+                    .frame(width: 17, height: 17)
                     .onTapGesture {
                         model.toggleIsCompleted(childModel.parentTodo)
                     }
@@ -131,8 +131,7 @@ public struct TaskTreeView: View {
                 )
             }
         }
-        .alert($model.alert) { _ in
-        }
+        .alert($model.alert) { _ in}
         .navigationDestination(unwrapping: $model.selectedChildModel) { $childModel in
             TaskTreeView(model: $childModel.wrappedValue)
         }
