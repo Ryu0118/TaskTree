@@ -14,7 +14,7 @@ format:
 
 .PHONY: dgraph
 dgraph:
-	$(DGRAPH) . --add-to-readme
+	$(DGRAPH) ./Packages/TaskTree
 
 .PHONY: license
 license:
