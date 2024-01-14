@@ -5,6 +5,12 @@
       "comment" : "Bundle name",
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TaskTree"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "new",
