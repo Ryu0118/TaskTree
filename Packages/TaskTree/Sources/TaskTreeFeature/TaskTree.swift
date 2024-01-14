@@ -8,6 +8,7 @@ import TodoClient
 import Utils
 import SettingFeature
 
+@MainActor
 @Observable
 final class TaskTreeModel {
     enum AlertAction: Equatable {
@@ -92,6 +93,7 @@ final class TaskTreeModel {
     }
 }
 
+@MainActor
 public struct TaskTreeView: View {
     @Bindable var model: TaskTreeModel
 
